@@ -6,6 +6,7 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Component("participantService")
 public class ParticipantService {
@@ -16,11 +17,49 @@ public class ParticipantService {
         connector = DatabaseConnector.getInstance();
     }
 
-    public Collection<Participant> getAll() {
+    public Collection<Participant> getAll(String order, String filter) {
         String hql = "FROM Participant";
+
+        if (!filter.isEmpty()) {
+            hql += " WHERE login LIKE '%" + filter + "%'";
+        }
+
+        if ("ASC".equalsIgnoreCase(order) || "DESC".equalsIgnoreCase(order)) {
+            hql += " ORDER BY login " + order;
+        }
+
         Query query = connector.getSession().createQuery(hql);
         return query.list();
     }
+
+
+//        StringBuilder hql = new StringBuilder("FROM Participant");
+//
+//
+//        if (filter != null && !filter.isEmpty()) {
+//            hql.append(" WHERE login LIKE :filter");
+//        }
+//
+//        if ("asc".equalsIgnoreCase(order)) {
+//            hql.append(" ORDER BY login ASC");
+//        } else if ("desc".equalsIgnoreCase(order)) {
+//            hql.append(" ORDER BY login DESC");
+//        }
+//
+//        Query query = connector.getSession().createQuery(hql.toString());
+//
+//        if (filter != null && !filter.isEmpty()) {
+//            query.setParameter("filter", "%" + filter + "%");
+//        }
+//
+//        return query.list();
+
+
+
+
+
+
+
 
     public Participant findByLogin(String login) {
         return connector.getSession().get(Participant.class, login);
