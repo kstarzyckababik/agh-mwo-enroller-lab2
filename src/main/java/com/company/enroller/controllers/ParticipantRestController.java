@@ -20,8 +20,6 @@ public class ParticipantRestController {
 	ParticipantService participantService;
 
 
-
-
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public ResponseEntity<?> getParticipants(
 			@RequestParam(value = "sortOrder", defaultValue = "") String order,
@@ -31,14 +29,16 @@ public class ParticipantRestController {
 		return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
 	}
 
-//	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-//	public ResponseEntity<?> getParticipant(@PathVariable("id") String login) {
-//		Participant participant = participantService.findByLogin(login);
-//		if (participant == null) {
-//			return new ResponseEntity(HttpStatus.NOT_FOUND);
-//		}
-//		return new ResponseEntity<Participant>(participant, HttpStatus.OK);
-//	}
+	@RequestMapping(value = "/{login}", method = RequestMethod.GET)
+	public ResponseEntity<?> getParticipant(@PathVariable("login") String login) {
+		Participant participant = participantService.findByLogin(login);
+		if (participant == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(participant, HttpStatus.OK);
+	}
+
+
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public ResponseEntity<?> addParticipant(@RequestBody Participant participant) {
@@ -51,8 +51,8 @@ public class ParticipantRestController {
 		return new ResponseEntity<Participant>(participant, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> delete(@PathVariable("id") String login) {
+	@RequestMapping(value = "/{login}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> delete(@PathVariable("login") String login) {
 		Participant participant = participantService.findByLogin(login);
 		if (participant == null) {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -61,107 +61,15 @@ public class ParticipantRestController {
 		return new ResponseEntity<Participant>(HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<?> update(@PathVariable("id") String login, @RequestBody Participant updatedParticipant) {
+	@RequestMapping(value = "/{login}", method = RequestMethod.PUT)
+	public ResponseEntity<?> update(@PathVariable("login") String login, @RequestBody Participant updatedParticipant) {
 		Participant participant = participantService.findByLogin(login);
 		if (participant == null) {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		}
+
 		participant.setPassword(updatedParticipant.getPassword());
 		participantService.update(participant);
 		return new ResponseEntity<Participant>(HttpStatus.OK);
 	}
-
-
-
-
-	//	@GetMapping
-//	public ResponseEntity<?> sortParticipants() {
-//		Collection<Participant> participants = participantService.getAll();
-//		List<Participant> sortedList = participants.stream()
-//				.sorted(Comparator.comparing(Participant::getLogin))
-//				.collect(Collectors.toList());
-//
-//		return new ResponseEntity<>(sortedList, HttpStatus.OK);
-//	}
-
-//	@GetMapping("/participants")
-//	public ResponseEntity<?> sortParticipants(
-//			@RequestParam(defaultValue = "login") String sortBy,
-//			@RequestParam(defaultValue = "ASC") String sortOrder) {
-//
-//		Collection<Participant> participants = participantService.getAll();
-//		List<Participant> sortedList = new ArrayList<>(participants);
-//
-//		Comparator<Participant> comparator;
-//
-//		switch (sortBy.toLowerCase()) {
-//			case "login":
-//				comparator = Comparator.comparing(Participant::getLogin);
-//				break;
-//			default:
-//				return new ResponseEntity<>("Nieobsługiwane pole sortowania: " + sortBy, HttpStatus.BAD_REQUEST);
-//		}
-//
-//		if ("desc".equalsIgnoreCase(sortOrder)) {
-//			comparator = comparator.reversed();
-//		}
-//
-//		sortedList.sort(comparator);
-//
-//		return new ResponseEntity<>(sortedList, HttpStatus.OK);
-//	}
-//
-//	@GetMapping("/participants")
-//	public ResponseEntity<?> filterParticipants(
-//			@RequestParam(required = false) String key) {
-//
-//		Collection<Participant> participants = participantService.getAll();
-//
-//
-//		Stream<Participant> stream = participants.stream();
-//		if (key != null && !key.isEmpty()) {
-//			stream = stream.filter(p -> p.getLogin() != null && p.getLogin().toLowerCase().contains(key.toLowerCase()));
-//		}
-//
-//		List<Participant> filteredList = stream.collect(Collectors.toList());
-//
-//		return new ResponseEntity<>(filteredList, HttpStatus.OK);
-//	}
-//
-//	@GetMapping("/participants")
-//	public ResponseEntity<?> getParticipants(
-//			@RequestParam(required = false) String key,
-//			@RequestParam(defaultValue = "login") String sortBy,
-//			@RequestParam(defaultValue = "ASC") String sortOrder) {
-//
-//		Collection<Participant> participants = participantService.getAll();
-//
-//		// Filtrowanie po loginie
-//		Stream<Participant> stream = participants.stream();
-//		if (key != null && !key.isEmpty()) {
-//			stream = stream.filter(p -> p.getLogin() != null && p.getLogin().toLowerCase().contains(key.toLowerCase()));
-//		}
-//
-//		// Sortowanie
-//		Comparator<Participant> comparator;
-//		switch (sortBy.toLowerCase()) {
-//			case "login":
-//				comparator = Comparator.comparing(Participant::getLogin, Comparator.nullsLast(String::compareToIgnoreCase));
-//				break;
-//			default:
-//				return new ResponseEntity<>("Nieobsługiwane pole sortowania: " + sortBy, HttpStatus.BAD_REQUEST);
-//		}
-//
-//		if ("desc".equalsIgnoreCase(sortOrder)) {
-//			comparator = comparator.reversed();
-//		}
-//
-//		List<Participant> result = stream.sorted(comparator).collect(Collectors.toList());
-//
-//		return new ResponseEntity<>(result, HttpStatus.OK);
-//	}
-//
-
-
 }

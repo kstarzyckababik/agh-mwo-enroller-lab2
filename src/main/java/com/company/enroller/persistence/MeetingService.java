@@ -25,8 +25,12 @@ public class MeetingService {
 	}
 
 
-	public Meeting findByLogin(long login) {
+/*	public Meeting findByLogin(long login) {
 		return session.get(Meeting.class, login);
+	}*/
+
+	public Meeting findById(long id) {
+		return session.get(Meeting.class, id);
 	}
 
 	public void add(Meeting meeting) {
