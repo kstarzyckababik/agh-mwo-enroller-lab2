@@ -3,6 +3,8 @@ package com.company.enroller.persistence;
 import com.company.enroller.model.Participant;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -10,6 +12,9 @@ import java.util.Objects;
 
 @Component("participantService")
 public class ParticipantService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     DatabaseConnector connector;
 
@@ -33,39 +38,15 @@ public class ParticipantService {
     }
 
 
-//        StringBuilder hql = new StringBuilder("FROM Participant");
-//
-//
-//        if (filter != null && !filter.isEmpty()) {
-//            hql.append(" WHERE login LIKE :filter");
-//        }
-//
-//        if ("asc".equalsIgnoreCase(order)) {
-//            hql.append(" ORDER BY login ASC");
-//        } else if ("desc".equalsIgnoreCase(order)) {
-//            hql.append(" ORDER BY login DESC");
-//        }
-//
-//        Query query = connector.getSession().createQuery(hql.toString());
-//
-//        if (filter != null && !filter.isEmpty()) {
-//            query.setParameter("filter", "%" + filter + "%");
-//        }
-//
-//        return query.list();
-
-
-
-
-
-
-
-
     public Participant findByLogin(String login) {
         return connector.getSession().get(Participant.class, login);
     }
 
     public Participant add(Participant participant) {
+
+        String hashedPassword = passwordEncoder.encode(participant.getPassword());
+        participant.setPassword(hashedPassword);
+
         Transaction transaction = connector.getSession().beginTransaction();
         connector.getSession().save(participant);
         transaction.commit();
